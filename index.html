@@ -392,16 +392,17 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
         <button class="btn btn-ghost btn-sm" onclick="openEditProjectModal()">Edit</button>
         <button class="btn btn-ghost btn-sm" onclick="openCopyModal()">Copy & New</button>
         <button class="btn btn-danger btn-sm" onclick="deleteProject()">Delete</button>
+        <button class="btn btn-ghost btn-sm" id="detail-pass-btn" onclick="openPassModal()" style="font-family:'DM Mono',monospace;font-size:0.75rem;">pass</button>
       </div>
       <div style="display:flex;gap:0.75rem;align-items:center;margin-top:0.75rem;flex-wrap:wrap;">
         <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.8rem;">
           <input type="checkbox" id="detail-start-chk" style="width:15px;height:15px;accent-color:var(--green);cursor:pointer;" onchange="toggleProjectActive(currentProjectId, this.checked)">
           <span style="color:var(--muted);">Start</span>
         </label>
-        <button class="btn btn-ghost btn-sm" onclick="copyAllLinks(currentProjectId)">⎘ 案内ページ / Info Page</button>
         <button class="btn btn-ghost btn-sm" onclick="copyLink('host')">⎘ Host</button>
         <button class="btn btn-ghost btn-sm" onclick="copyLink('join')">⎘ Join</button>
         <button class="btn btn-ghost btn-sm" onclick="copyLink('viewer')">⎘ Viewer</button>
+        <button class="btn btn-ghost btn-icon" title="マスターコピー / Master Copy" onclick="copyAllLinks(currentProjectId)" style="width:28px;height:28px;padding:0;font-size:0.9rem;">⎘</button>
       </div>
     </div>
 
@@ -648,6 +649,29 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
 </div>
 
 <!-- Copy Project Modal -->
+<!-- Pass Modal -->
+<div id="modal-pass" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:320px;">
+    <div class="modal-title" id="pass-modal-title">パスワード設定 / Password</div>
+    <div id="pass-current-display" style="display:none;margin-bottom:1rem;">
+      <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.4rem;">現在のパスワード / Current</div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <span id="pass-current-val" style="font-family:'DM Mono',monospace;font-size:1rem;color:var(--accent);"></span>
+        <button class="btn btn-ghost btn-icon" onclick="copyCurrentPass()" style="width:26px;height:26px;padding:0;" title="コピー">⎘</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label" id="pass-input-label">新しいパスワード / New Password</label>
+      <input type="text" id="pass-input" placeholder="例: abc123" maxlength="8" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:0.88rem;padding:0.65rem 0.8rem;outline:none;font-family:'DM Mono',monospace;">
+    </div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" style="flex:1;" onclick="savePass()">保存 / Save</button>
+      <button class="btn btn-danger btn-sm" id="pass-remove-btn" onclick="removePass()" style="display:none;">削除 / Remove</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-pass')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
 <div id="modal-copy" class="modal-overlay hidden">
   <div class="modal-box">
     <div class="modal-title">Copy & New Project</div>
@@ -934,6 +958,18 @@ function renderDetail() {
   modeTag.textContent = p.mode || '1by1';
   const chk = document.getElementById('detail-start-chk');
   if (chk) chk.checked = !!p.activeSessionId;
+  const passBtn = document.getElementById('detail-pass-btn');
+  if (passBtn) {
+    if (p.password) {
+      passBtn.textContent = 'pass ✓';
+      passBtn.style.color = 'var(--accent)';
+      passBtn.style.borderColor = 'var(--accent)';
+    } else {
+      passBtn.textContent = 'pass';
+      passBtn.style.color = '';
+      passBtn.style.borderColor = '';
+    }
+  }
   renderQuestionList();
 }
 
@@ -1623,6 +1659,44 @@ function buildProjectUrls(pid) {
     infoUrl:   `${baseUrl}?mode=info&project=${pid}&cfg=${cfg}`,
     qrUrl:     `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`${baseUrl}?mode=join&project=${pid}&cfg=${cfg}`)}`
   };
+}
+
+function openPassModal() {
+  const p = currentProject;
+  const hasPw = !!p.password;
+  document.getElementById('pass-modal-title').textContent = hasPw ? 'パスワード設定済み / Password Set' : 'パスワード設定 / Set Password';
+  document.getElementById('pass-current-display').style.display = hasPw ? 'block' : 'none';
+  if (hasPw) document.getElementById('pass-current-val').textContent = p.password;
+  document.getElementById('pass-input-label').textContent = hasPw ? '変更する場合 / Change to' : '新しいパスワード / New Password';
+  document.getElementById('pass-input').value = '';
+  document.getElementById('pass-remove-btn').style.display = hasPw ? '' : 'none';
+  openModal('modal-pass');
+  setTimeout(() => document.getElementById('pass-input').focus(), 100);
+}
+
+function savePass() {
+  const val = document.getElementById('pass-input').value.trim();
+  if (!val) { showStatus('パスワードを入力してください', 'err'); return; }
+  db.ref(`projects/${currentProjectId}`).update({ password: val }, () => {
+    currentProject.password = val;
+    renderDetail();
+    closeModal('modal-pass');
+    showStatus('パスワードを設定しました / Password saved', 'ok');
+  });
+}
+
+function removePass() {
+  db.ref(`projects/${currentProjectId}`).update({ password: null }, () => {
+    currentProject.password = null;
+    renderDetail();
+    closeModal('modal-pass');
+    showStatus('パスワードを削除しました / Password removed', 'ok');
+  });
+}
+
+function copyCurrentPass() {
+  const val = document.getElementById('pass-current-val').textContent;
+  navigator.clipboard.writeText(val).then(() => showStatus('コピーしました / Copied', 'ok'));
 }
 
 function copyLink(type) {
