@@ -197,7 +197,8 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
 /* ══════════════════════════════
    SCREEN 5: PARTICIPANT
 ══════════════════════════════ */
-#screen-participant{align-items:center;justify-content:center;padding:1.5rem;}
+.info-link-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;}
+
 .p-card{width:100%;max-width:430px;}
 
 .p-header{margin-bottom:1.75rem;}
@@ -299,6 +300,61 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
 </div>
 
 <!-- ══ SCREEN: PROJECTS ══ -->
+<!-- ══ SCREEN: INFO PAGE ══ -->
+<div id="screen-info" class="screen" style="display:none;">
+  <div style="min-height:100vh;background:var(--bg);display:flex;flex-direction:column;">
+    <div style="padding:1rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:0.75rem;font-weight:500;letter-spacing:0.05em;color:var(--muted);">Workshop Live</div>
+      <div style="font-size:0.75rem;color:var(--muted);" id="info-project-name"></div>
+    </div>
+    <div style="flex:1;max-width:480px;margin:0 auto;width:100%;padding:2rem 1.5rem;">
+      <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:1.5rem;">リンク一覧 / Links</div>
+
+      <!-- Password -->
+      <div id="info-password-block" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;">
+        <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.4rem;">パスワード / Password</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:1rem;font-weight:500;color:var(--accent);font-family:'DM Mono',monospace;" id="info-password-val"></div>
+          <button class="btn btn-ghost btn-icon" title="コピー" onclick="copyInfoItem('password')" style="width:28px;height:28px;padding:0;">⎘</button>
+        </div>
+      </div>
+
+      <!-- Host -->
+      <div class="info-link-card" id="info-host-block">
+        <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.4rem;">ホスト / Host</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div style="font-size:0.72rem;color:var(--text);word-break:break-all;flex:1;" id="info-host-url"></div>
+          <button class="btn btn-ghost btn-icon" title="コピー" onclick="copyInfoItem('host')" style="width:28px;height:28px;padding:0;flex-shrink:0;">⎘</button>
+        </div>
+      </div>
+
+      <!-- Join -->
+      <div class="info-link-card">
+        <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.4rem;">回答者 / Join</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div style="font-size:0.72rem;color:var(--text);word-break:break-all;flex:1;" id="info-join-url"></div>
+          <button class="btn btn-ghost btn-icon" title="コピー" onclick="copyInfoItem('join')" style="width:28px;height:28px;padding:0;flex-shrink:0;">⎘</button>
+        </div>
+        <!-- QR Code -->
+        <div style="margin-top:1rem;display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+          <div id="info-qr"></div>
+          <div style="font-size:0.65rem;color:var(--muted);">QR Code</div>
+        </div>
+      </div>
+
+      <!-- Viewer -->
+      <div class="info-link-card">
+        <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.4rem;">結果ビュー / Viewer</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div style="font-size:0.72rem;color:var(--text);word-break:break-all;flex:1;" id="info-viewer-url"></div>
+          <button class="btn btn-ghost btn-icon" title="コピー" onclick="copyInfoItem('viewer')" style="width:28px;height:28px;padding:0;flex-shrink:0;">⎘</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <div id="screen-projects" class="screen">
   <div class="topbar">
     <div class="topbar-logo">Workshop Live</div>
@@ -336,6 +392,16 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
         <button class="btn btn-ghost btn-sm" onclick="openEditProjectModal()">Edit</button>
         <button class="btn btn-ghost btn-sm" onclick="openCopyModal()">Copy & New</button>
         <button class="btn btn-danger btn-sm" onclick="deleteProject()">Delete</button>
+      </div>
+      <div style="display:flex;gap:0.75rem;align-items:center;margin-top:0.75rem;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.8rem;">
+          <input type="checkbox" id="detail-start-chk" style="width:15px;height:15px;accent-color:var(--green);cursor:pointer;" onchange="toggleProjectActive(currentProjectId, this.checked)">
+          <span style="color:var(--muted);">Start</span>
+        </label>
+        <button class="btn btn-ghost btn-sm" onclick="copyAllLinks(currentProjectId)">⎘ 案内ページ / Info Page</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyLink('host')">⎘ Host</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyLink('join')">⎘ Join</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyLink('viewer')">⎘ Viewer</button>
       </div>
     </div>
 
@@ -376,6 +442,19 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
           <button class="btn btn-ghost btn-icon" title="コピー / Copy" onclick="copyJoinLink()" style="flex-shrink:0;width:24px;height:24px;padding:0;font-size:0.85rem;">⎘</button>
         </div>
         <button id="live-viewer-btn" class="btn btn-ghost btn-sm" style="width:100%;margin-top:0.75rem;">📺 閲覧者画面 / Open Viewer</button>
+
+        <!-- Logo drop zone -->
+        <div style="margin-top:1rem;">
+          <div style="font-size:0.63rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.5rem;">ロゴ / Logo</div>
+          <div id="logo-drop-zone" style="border:1px dashed var(--border2);border-radius:6px;padding:0.6rem;text-align:center;cursor:pointer;font-size:0.7rem;color:var(--muted);transition:border-color 0.2s;"
+            ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+            ondragleave="this.style.borderColor=''"
+            ondrop="handleLogoDrop(event)">
+            <div id="logo-preview" style="display:none;"><img id="logo-preview-img" src="" style="max-width:100%;max-height:60px;object-fit:contain;border-radius:4px;"></div>
+            <div id="logo-placeholder">🖼 ドロップ / Drop image</div>
+          </div>
+          <button id="logo-clear-btn" onclick="clearLogo()" style="display:none;margin-top:0.3rem;width:100%;" class="btn btn-ghost btn-sm" style="font-size:0.7rem;">✕ Remove</button>
+        </div>
       </div>
       <div class="live-sidebar-section">
         <div class="live-section-label">回答数 / Responses</div>
@@ -385,7 +464,21 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
         </div>
       </div>
       <div class="live-sidebar-section" style="flex:1;">
-        <div class="live-section-label">問い / Questions</div>
+        <div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.5rem;">
+          <div class="live-section-label" style="flex:1;margin-bottom:0;">問い / Questions</div>
+          <div style="font-size:0.58rem;color:var(--muted);text-align:center;width:38px;line-height:1.2;">
+            結果<br>Result<br>
+            <div style="background:var(--surface);border:1px solid var(--border2);border-radius:4px;padding:2px;margin-top:2px;display:inline-block;">
+              <input type="checkbox" id="chk-all-results" title="全部" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer;" onchange="toggleAllCheck('showResults', this.checked)">
+            </div>
+          </div>
+          <div style="font-size:0.58rem;color:var(--muted);text-align:center;width:38px;line-height:1.2;">
+            複数回<br>Multi<br>
+            <div style="background:var(--surface);border:1px solid var(--border2);border-radius:4px;padding:2px;margin-top:2px;display:inline-block;">
+              <input type="checkbox" id="chk-all-multi" title="全部" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer;" onchange="toggleAllCheck('multiAnswer', this.checked)">
+            </div>
+          </div>
+        </div>
         <div id="live-q-list" class="live-q-list"></div>
         <button class="live-q-btn" style="margin-top:0.5rem;color:var(--muted);width:100%;justify-content:center;" onclick="blankQuestion()">○ 非表示 / Clear</button>
       </div>
@@ -413,9 +506,14 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
 <!-- ══ SCREEN: PARTICIPANT ══ -->
 <div id="screen-participant" class="screen">
   <div class="p-card">
-    <div class="p-header">
-      <div class="p-project-name" id="p-project-name"></div>
-      <div class="p-session-title" id="p-session-title">Workshop Live</div>
+    <div class="p-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
+      <div style="flex:1;">
+        <div class="p-project-name" id="p-project-name"></div>
+        <div class="p-session-title" id="p-session-title">Workshop Live</div>
+      </div>
+      <div id="p-logo-area" style="display:none;flex-shrink:0;">
+        <img id="p-logo-img" src="" style="max-width:80px;max-height:50px;object-fit:contain;border-radius:4px;">
+      </div>
     </div>
     <div class="p-progress"><div class="p-progress-fill" id="p-progress-fill" style="width:0%"></div></div>
     <div id="p-content"></div>
@@ -438,6 +536,10 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
         <div id="viewer-qr"></div>
         <div style="font-size:1.8rem;font-weight:400;color:var(--accent);line-height:1;" id="viewer-count-big">0</div>
         <div style="font-size:0.7rem;color:var(--muted);">responses</div>
+        <!-- Logo area -->
+        <div id="viewer-logo-area" style="width:100%;margin-top:0.5rem;display:none;">
+          <img id="viewer-logo-img" src="" style="width:100%;max-height:80px;object-fit:contain;border-radius:6px;">
+        </div>
       </div>
       <!-- Right: display -->
       <div style="flex:1;padding:2rem;display:flex;flex-direction:column;overflow:hidden;position:relative;">
@@ -505,6 +607,17 @@ input,textarea,button{font-family:'Noto Sans JP',sans-serif;}
         <button class="add-type-btn" id="mp-mode-multi" onclick="setProjectMode('1byMulti')" style="flex:1;">1 by Multi<br><small style="color:var(--muted);font-size:0.68rem;">For surveys</small></button>
       </div>
       <div style="font-size:0.72rem;color:var(--muted);line-height:1.5;" id="mp-mode-hint">1by1: Opens questions one at a time. Participants see only the active question.</div>
+    </div>
+
+    <div class="field" style="margin-top:0.5rem;">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.85rem;white-space:nowrap;">
+          <input type="checkbox" id="mp-use-password" style="width:15px;height:15px;accent-color:var(--accent);" onchange="togglePasswordField()">
+          <span>パスワード / Pass</span>
+        </label>
+        <input type="text" id="mp-password" placeholder="例: abc123" maxlength="8"
+          style="display:none;width:9rem;background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:0.85rem;padding:0.4rem 0.6rem;outline:none;">
+      </div>
     </div>
 
     <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
@@ -598,6 +711,33 @@ window.addEventListener('DOMContentLoaded', () => {
   const pid = params.get('project');
   const cfg = params.get('cfg');
 
+  if (mode === 'info' && pid && cfg) {
+    try {
+      const config = JSON.parse(decodeURIComponent(atob(cfg)));
+      initFirebase(config);
+      showScreen('screen-info');
+      initInfoPage(pid, cfg);
+    } catch(e) { showStatus('Connection error', 'err'); }
+  }
+
+  if (mode === 'host' && pid && cfg) {
+    try {
+      const config = JSON.parse(decodeURIComponent(atob(cfg)));
+      initFirebase(config);
+      db.ref(`projects/${pid}`).once('value', snap => {
+        if (!snap.val()) { showStatus('Project not found', 'err'); return; }
+        currentProjectId = pid;
+        currentProject = snap.val();
+        const pw = currentProject.password;
+        if (pw) {
+          const entered = prompt(`パスワードを入力してください / Enter password for "${currentProject.name}"`);
+          if (entered !== pw) { showStatus('パスワードが違います / Wrong password', 'err'); return; }
+        }
+        openProject(pid);
+      });
+    } catch(e) { showStatus('Connection error', 'err'); }
+  }
+
   if (mode === 'viewer' && pid && cfg) {
     try {
       const config = JSON.parse(decodeURIComponent(atob(cfg)));
@@ -668,14 +808,22 @@ function renderProjectList() {
     const div = document.createElement('div');
     div.className = 'project-card';
     const qCount = p.questions ? Object.keys(p.questions).length : 0;
+    const isActive = !!p.activeSessionId;
     div.innerHTML = `
-      <div class="project-card-info">
+      <div class="project-card-info" style="flex:1;min-width:0;">
         <div class="project-card-name">${escHtml(p.name)}</div>
         <div class="project-card-meta">
           <span>${qCount}問</span>
           <span class="tag ${p.mode === '1byMulti' ? 'tag-1byMulti' : 'tag-1by1'}">${p.mode || '1by1'}</span>
-          ${p.description ? `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;">${escHtml(p.description)}</span>` : ''}
+          ${p.description ? `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;">${escHtml(p.description)}</span>` : ''}
         </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;" onclick="event.stopPropagation()">
+        <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer;font-size:0.7rem;color:var(--muted);" title="Start / セッション開始">
+          <input type="checkbox" class="card-start-chk" data-pid="${pid}" ${isActive?'checked':''} style="width:14px;height:14px;accent-color:var(--green);cursor:pointer;" onchange="toggleProjectActive('${pid}', this.checked)">
+          <span>Start</span>
+        </label>
+        <button class="btn btn-ghost btn-icon" title="リンクをコピー / Copy links" onclick="copyAllLinks('${pid}')" style="width:26px;height:26px;padding:0;font-size:0.85rem;">⎘</button>
       </div>
       <div class="project-card-arrow">›</div>`;
     div.onclick = () => openProject(pid);
@@ -704,6 +852,10 @@ function openEditProjectModal() {
   document.getElementById('mp-name').value = currentProject.name || '';
   document.getElementById('mp-desc').value = currentProject.description || '';
   document.getElementById('mp-mode-field').style.display = 'block';
+  const hasPw = !!currentProject.password;
+  document.getElementById('mp-use-password').checked = hasPw;
+  document.getElementById('mp-password').style.display = hasPw ? '' : 'none';
+  document.getElementById('mp-password').value = currentProject.password || '';
   openModal('modal-project');
 }
 
@@ -721,6 +873,8 @@ function setProjectMode(mode) {
 function submitProject() {
   const name = document.getElementById('mp-name').value.trim();
   if (!name) { showStatus('Please enter a project name', 'err'); return; }
+  const usePassword = document.getElementById('mp-use-password').checked;
+  const password = usePassword ? document.getElementById('mp-password').value.trim() : null;
 
   if (projectModalMode === 'create') {
     const newId = db.ref('projects').push().key;
@@ -728,6 +882,7 @@ function submitProject() {
       name,
       description: document.getElementById('mp-desc').value.trim(),
       mode: projectsModeSelected,
+      password: password || null,
       createdAt: Date.now()
     }).then(() => {
       closeModal('modal-project');
@@ -738,7 +893,8 @@ function submitProject() {
     db.ref(`projects/${currentProjectId}`).update({
       name,
       description: document.getElementById('mp-desc').value.trim(),
-      mode: projectsModeSelected
+      mode: projectsModeSelected,
+      password: password || null
     }).then(() => {
       closeModal('modal-project');
       showStatus('Updated', 'ok');
@@ -776,6 +932,8 @@ function renderDetail() {
   const modeTag = document.getElementById('detail-mode-tag');
   modeTag.className = `tag ${p.mode === '1byMulti' ? 'tag-1byMulti' : 'tag-1by1'}`;
   modeTag.textContent = p.mode || '1by1';
+  const chk = document.getElementById('detail-start-chk');
+  if (chk) chk.checked = !!p.activeSessionId;
   renderQuestionList();
 }
 
@@ -950,6 +1108,12 @@ function startLive() {
   const questions = currentProject.questions || {};
   if (!Object.keys(questions).length) { showStatus('Add at least one question', 'err'); return; }
 
+  // パスワード確認
+  if (currentProject.password) {
+    const entered = prompt(`パスワードを入力してください / Enter password for "${currentProject.name}"`);
+    if (entered !== currentProject.password) { showStatus('パスワードが違います / Wrong password', 'err'); return; }
+  }
+
   // Fixed session ID per project
   liveSessionId = `session-${currentProjectId}`;
   liveActiveQId = null;
@@ -1005,6 +1169,7 @@ function startLive() {
   });
 
   updateLiveResponseCount();
+  loadLogo();
 }
 
 // ボタン状態をFirebaseの実態に合わせる
@@ -1040,14 +1205,50 @@ function renderLiveSidebar() {
   const container = document.getElementById('live-q-list');
   container.innerHTML = '';
   sorted.forEach(([qid, q], i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:0.3rem;margin-bottom:0.3rem;';
+
+    // Question button
     const btn = document.createElement('button');
     btn.className = 'live-q-btn';
+    btn.style.flex = '1';
+    btn.style.minWidth = '0';
     btn.id = `lqbtn-${qid}`;
     btn.innerHTML = `<span class="lqnum">${String(i+1).padStart(2,'0')}</span>
-      <span class="lqtext">${escHtml(q.text)}</span>
+      <span class="lqtext" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(q.text)}</span>
       <span class="lqcount" id="lqcount-${qid}">—</span>`;
     btn.onclick = () => activateQuestion(qid, q);
-    container.appendChild(btn);
+
+    // 結果チェックボックス
+    const resCell = document.createElement('div');
+    resCell.style.cssText = 'width:38px;display:flex;justify-content:center;flex-shrink:0;';
+    const resChk = document.createElement('input');
+    resChk.type = 'checkbox';
+    resChk.id = `lqres-${qid}`;
+    resChk.checked = !!(q.showResults);
+    resChk.style.cssText = 'width:16px;height:16px;accent-color:var(--accent);cursor:pointer;';
+    resChk.onchange = () => {
+      db.ref(`projects/${currentProjectId}/questions/${qid}`).update({ showResults: resChk.checked });
+    };
+    resCell.appendChild(resChk);
+
+    // 複数回チェックボックス
+    const multiCell = document.createElement('div');
+    multiCell.style.cssText = 'width:38px;display:flex;justify-content:center;flex-shrink:0;';
+    const multiChk = document.createElement('input');
+    multiChk.type = 'checkbox';
+    multiChk.id = `lqmulti-${qid}`;
+    multiChk.checked = !!(q.multiAnswer);
+    multiChk.style.cssText = 'width:16px;height:16px;accent-color:var(--accent);cursor:pointer;';
+    multiChk.onchange = () => {
+      db.ref(`projects/${currentProjectId}/questions/${qid}`).update({ multiAnswer: multiChk.checked });
+    };
+    multiCell.appendChild(multiChk);
+
+    row.appendChild(btn);
+    row.appendChild(resCell);
+    row.appendChild(multiCell);
+    container.appendChild(row);
 
     // Watch response count per question
     db.ref(`sessions/${liveSessionId}/responses/${qid}`).on('value', snap => {
@@ -1346,9 +1547,185 @@ function renderPollBars(options, counts) {
   });
 }
 
+function toggleAllCheck(field, value) {
+  const questions = currentProject.questions || {};
+  const updates = {};
+  Object.keys(questions).forEach(qid => {
+    updates[`projects/${currentProjectId}/questions/${qid}/${field}`] = value;
+  });
+  db.ref().update(updates);
+  // 各行のチェックボックスも同期
+  Object.keys(questions).forEach(qid => {
+    const chk = document.getElementById(field === 'showResults' ? `lqres-${qid}` : `lqmulti-${qid}`);
+    if (chk) chk.checked = value;
+  });
+}
+
+function togglePasswordField() {
+  const chk = document.getElementById('mp-use-password');
+  const inp = document.getElementById('mp-password');
+  inp.style.display = chk.checked ? '' : 'none';
+  if (!chk.checked) inp.value = '';
+}
+
+let infoUrls = {};
+
+function initInfoPage(pid, cfgParam) {
+  db.ref(`projects/${pid}`).once('value', snap => {
+    const p = snap.val();
+    if (!p) { showStatus('Project not found', 'err'); return; }
+
+    document.getElementById('info-project-name').textContent = p.name;
+
+    const baseUrl = window.location.href.split('?')[0];
+    const cfg = cfgParam || encodeURIComponent(btoa(JSON.stringify(fbConfig)));
+    infoUrls = {
+      host:   `${baseUrl}?mode=host&project=${pid}&cfg=${cfg}`,
+      join:   `${baseUrl}?mode=join&project=${pid}&cfg=${cfg}`,
+      viewer: `${baseUrl}?mode=viewer&project=${pid}&cfg=${cfg}`,
+      password: p.password || ''
+    };
+
+    document.getElementById('info-host-url').textContent = infoUrls.host;
+    document.getElementById('info-join-url').textContent = infoUrls.join;
+    document.getElementById('info-viewer-url').textContent = infoUrls.viewer;
+
+    // パスワード
+    if (p.password) {
+      document.getElementById('info-password-block').style.display = 'block';
+      document.getElementById('info-password-val').textContent = p.password;
+    }
+
+    // QRコード
+    document.getElementById('info-qr').innerHTML = '';
+    new QRCode(document.getElementById('info-qr'), {
+      text: infoUrls.join,
+      width: 180, height: 180,
+      colorDark: '#f0ebe0', colorLight: '#0c0c0c',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  });
+}
+
+function copyInfoItem(type) {
+  const val = type === 'password' ? infoUrls.password : infoUrls[type];
+  navigator.clipboard.writeText(val).then(() => showStatus('コピーしました / Copied', 'ok'));
+}
+
+function buildProjectUrls(pid) {
+  const cfgEncoded = btoa(JSON.stringify(fbConfig));
+  const baseUrl = window.location.href.split('?')[0];
+  const cfg = encodeURIComponent(cfgEncoded);
+  return {
+    hostUrl:   `${baseUrl}?mode=host&project=${pid}&cfg=${cfg}`,
+    joinUrl:   `${baseUrl}?mode=join&project=${pid}&cfg=${cfg}`,
+    viewerUrl: `${baseUrl}?mode=viewer&project=${pid}&cfg=${cfg}`,
+    infoUrl:   `${baseUrl}?mode=info&project=${pid}&cfg=${cfg}`,
+    qrUrl:     `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`${baseUrl}?mode=join&project=${pid}&cfg=${cfg}`)}`
+  };
+}
+
+function copyLink(type) {
+  const urls = buildProjectUrls(currentProjectId);
+  const map = { host: urls.hostUrl, join: urls.joinUrl, viewer: urls.viewerUrl };
+  navigator.clipboard.writeText(map[type]).then(() => showStatus('コピーしました / Copied', 'ok'));
+}
+
+function copyAllLinks(pid) {
+  const urls = buildProjectUrls(pid);
+  db.ref(`projects/${pid}`).once('value', snap => {
+    const p = snap.val() || {};
+    const pwLine = p.password
+      ? `<p style="margin:4px 0;font-family:sans-serif;font-size:14px;">パスワード / Password: <strong>${p.password}</strong></p>`
+      : '';
+    const html = `<p style="margin:4px 0;font-family:sans-serif;font-size:14px;"><a href="${urls.infoUrl}">案内ページ / Info Page</a></p>${pwLine}`;
+
+    // execCommandでHTMLコピー（Gmail/Outlook対応）
+    const el = document.createElement('div');
+    el.innerHTML = html;
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+    document.body.appendChild(el);
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    sel.removeAllRanges();
+    document.body.removeChild(el);
+    showStatus('コピーしました / Copied', 'ok');
+  });
+}
+
+function toggleProjectActive(pid, checked) {
+  if (checked) {
+    // セッションを開始（既存のactiveSessionIdがなければ新規作成）
+    const sessionId = `session-${pid}`;
+    db.ref(`sessions/${sessionId}`).once('value', snap => {
+      const existing = snap.val();
+      if (!existing) {
+        db.ref(`sessions/${sessionId}`).set({ status: 'active', startedAt: Date.now() });
+      } else {
+        db.ref(`sessions/${sessionId}`).update({ status: 'active' });
+      }
+      db.ref(`projects/${pid}`).update({ activeSessionId: sessionId });
+    });
+  } else {
+    db.ref(`sessions/session-${pid}`).update({ status: 'ended' });
+    db.ref(`projects/${pid}`).update({ activeSessionId: null });
+  }
+  // 詳細画面のチェックボックスも同期
+  const detailChk = document.getElementById('detail-start-chk');
+  if (detailChk) detailChk.checked = checked;
+}
+
 function copyJoinLink() {
   const url = document.getElementById('live-join-url').textContent;
   navigator.clipboard.writeText(url).then(() => showStatus('コピーしました / Copied', 'ok'));
+}
+
+function handleLogoDrop(e) {
+  e.preventDefault();
+  document.getElementById('logo-drop-zone').style.borderColor = '';
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const dataUrl = ev.target.result;
+    // Firebaseに保存（参加者画面でも使えるように）
+    db.ref(`projects/${currentProjectId}/logoDataUrl`).set(dataUrl);
+    localStorage.setItem(`logo-${currentProjectId}`, dataUrl);
+    applyLogoToUI(dataUrl);
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyLogoToUI(dataUrl) {
+  // Host preview
+  document.getElementById('logo-preview-img').src = dataUrl;
+  document.getElementById('logo-preview').style.display = 'block';
+  document.getElementById('logo-placeholder').style.display = 'none';
+  document.getElementById('logo-clear-btn').style.display = '';
+  // Viewer
+  document.getElementById('viewer-logo-img').src = dataUrl;
+  document.getElementById('viewer-logo-area').style.display = 'block';
+}
+
+function clearLogo() {
+  db.ref(`projects/${currentProjectId}/logoDataUrl`).remove();
+  localStorage.removeItem(`logo-${currentProjectId}`);
+  document.getElementById('logo-preview').style.display = 'none';
+  document.getElementById('logo-placeholder').style.display = '';
+  document.getElementById('logo-clear-btn').style.display = 'none';
+  document.getElementById('viewer-logo-area').style.display = 'none';
+}
+
+function loadLogo() {
+  const cached = localStorage.getItem(`logo-${currentProjectId}`);
+  if (cached) { applyLogoToUI(cached); return; }
+  db.ref(`projects/${currentProjectId}/logoDataUrl`).once('value', snap => {
+    if (snap.val()) applyLogoToUI(snap.val());
+  });
 }
 
 function blankQuestion() {
@@ -1586,6 +1963,12 @@ function initParticipant() {
     document.getElementById('p-project-name').textContent = project.name;
     document.getElementById('p-session-title').textContent = project.name;
 
+    // ロゴをFirebaseから読み込む
+    if (project.logoDataUrl) {
+      document.getElementById('p-logo-img').src = project.logoDataUrl;
+      document.getElementById('p-logo-area').style.display = 'block';
+    }
+
     // プロジェクトのアクティブセッションIDを監視（再開始に追従）
     db.ref(`projects/${pProjectId}/activeSessionId`).on('value', snap => {
       const newSessionId = snap.val();
@@ -1648,6 +2031,7 @@ function initParticipant() {
             }
           });
         }
+
       });
     });
   });
@@ -1664,7 +2048,7 @@ function renderPWaiting() {
 function renderP1by1Question(q, idx) {
   if (pSubmitted[q.id]) {
     document.getElementById('p-content').innerHTML = `
-      <div class="p-submitted"><div class="check">✓</div><div class="msg"> responses submitted</div><div class="sub">Please see the screen</div></div>`;
+      <div class="p-submitted"><div class="check">✓</div><div class="msg">Submitted</div><div class="sub">送信完了</div></div>`;
     return;
   }
   document.getElementById('p-progress-fill').style.width = `${((idx+1)/pQuestions.length)*100}%`;
@@ -1730,8 +2114,7 @@ function pSubmitText(qid) {
   if (!text) return;
   db.ref(`sessions/${pSessionId}/responses/${qid}`).push({ text, timestamp: Date.now() });
   pSubmitted[qid] = true;
-  document.getElementById('p-content').innerHTML = `
-    <div class="p-submitted"><div class="check">✓</div><div class="msg">Submitted</div><div class="sub">Please see the screen</div></div>`;
+  renderPPostSubmit(qid);
 }
 
 function pSubmitPoll(qid) {
@@ -1739,8 +2122,79 @@ function pSubmitPoll(qid) {
   db.ref(`sessions/${pSessionId}/responses/${qid}`).push({ choice: pSelectedOpt, timestamp: Date.now() });
   pSubmitted[qid] = true;
   pSelectedOpt = null;
-  document.getElementById('p-content').innerHTML = `
-    <div class="p-submitted"><div class="check">✓</div><div class="msg">Submitted</div><div class="sub">Please see the screen</div></div>`;
+  renderPPostSubmit(qid);
+}
+
+function renderPPostSubmit(qid) {
+  // 送信後の画面をshowResults/multiAnswerのリアルタイム変化に対応させる
+  const container = document.getElementById('p-content');
+  container.innerHTML = `
+    <div style="padding:0.5rem 0;" id="p-post-submit-wrap">
+      <div style="font-size:0.7rem;color:var(--green);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">✓ Submitted</div>
+      <div id="p-results-area"></div>
+      <div id="p-multi-btn-area"></div>
+    </div>`;
+
+  // showResultsのリアルタイム監視
+  db.ref(`projects/${pProjectId}/questions/${qid}/showResults`).on('value', snap => {
+    const resultsArea = document.getElementById('p-results-area');
+    if (!resultsArea) return;
+    if (snap.val()) {
+      resultsArea.innerHTML = `<div style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem;">結果 / Results</div><div id="p-live-results"></div>`;
+      // 結果の中身をリアルタイム表示
+      const q = pQuestions.find(q => q.id === qid);
+      if (!q) return;
+      db.ref(`sessions/${pSessionId}/responses/${qid}`).on('value', rSnap => {
+        const el = document.getElementById('p-live-results');
+        if (!el) return;
+        const responses = Object.values(rSnap.val() || {});
+        if (q.type === 'wordcloud') {
+          const freq = {};
+          responses.forEach(r => (r.text||'').replace(/[。、！？,.!?　]/g,' ').split(/\s+/).filter(w=>w.length>0).forEach(w=>{freq[w]=(freq[w]||0)+1;}));
+          const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,20);
+          const maxF = Math.max(...Object.values(freq),1);
+          el.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:0.4rem 0.7rem;">${
+            sorted.map(([w,c])=>`<span style="color:var(--accent);font-size:${0.75+(c/maxF)*1.1}rem;opacity:${0.4+(c/maxF)*0.6}">${escHtml(w)}</span>`).join('')
+          }</div><div style="font-size:0.68rem;color:var(--muted);margin-top:0.5rem;">${responses.length} responses</div>`;
+        } else {
+          const counts = {};
+          (q.options||[]).forEach(o=>counts[o]=0);
+          responses.forEach(r=>{if(r.choice&&counts[r.choice]!==undefined)counts[r.choice]++;});
+          const total = responses.length;
+          el.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.5rem;">${
+            (q.options||[]).map(opt=>{
+              const c=counts[opt]||0, pct=total>0?Math.round(c/total*100):0;
+              return `<div><div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:0.2rem;"><span>${escHtml(opt)}</span><span style="color:var(--muted);">${c}票 (${pct}%)</span></div><div style="background:var(--surface2);border-radius:3px;height:6px;"><div style="background:var(--accent);width:${pct}%;height:100%;border-radius:3px;transition:width 0.4s;"></div></div></div>`;
+            }).join('')
+          }<div style="font-size:0.68rem;color:var(--muted);margin-top:0.4rem;">${total} responses</div></div>`;
+        }
+      });
+    } else {
+      db.ref(`sessions/${pSessionId}/responses/${qid}`).off();
+      resultsArea.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);">送信完了</div>`;
+    }
+  });
+
+  // 複数回回答ボタンのリアルタイム監視
+  db.ref(`projects/${pProjectId}/questions/${qid}/multiAnswer`).on('value', snap => {
+    const area = document.getElementById('p-multi-btn-area');
+    if (!area) return;
+    area.innerHTML = snap.val()
+      ? `<button class="p-submit" style="margin-top:1.5rem;background:var(--surface);color:var(--muted);border:1px solid var(--border2);font-size:0.75rem;padding:0.6rem;" onclick="pAnswerAgain('${qid}')">↩ もう一度回答する</button>`
+      : '';
+  });
+}
+
+function renderPPostSubmitResults(q) {
+  renderPPostSubmit(q.id);
+}
+
+function pAnswerAgain(qid) {
+  pSubmitted[qid] = false;
+  // 既存リスナーを止める
+  db.ref(`sessions/${pSessionId}/responses/${qid}`).off();
+  const q = pQuestions.find(q => q.id === qid);
+  if (q) renderP1by1Question(q, pQuestions.indexOf(q));
 }
 
 function mCheckSubmit(qid) {
@@ -1789,6 +2243,12 @@ function initViewer(projectId) {
   db.ref(`projects/${projectId}`).once('value', snap => {
     const project = snap.val();
     if (!project) return;
+
+    // ロゴをFirebaseから読み込む
+    if (project.logoDataUrl) {
+      document.getElementById('viewer-logo-img').src = project.logoDataUrl;
+      document.getElementById('viewer-logo-area').style.display = 'block';
+    }
 
     const cfgEncoded = new URLSearchParams(window.location.search).get('cfg');
     const baseUrl = window.location.href.split('?')[0];
