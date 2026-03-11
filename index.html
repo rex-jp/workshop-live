@@ -847,6 +847,7 @@ function renderProjectList() {
           <input type="checkbox" class="card-start-chk" data-pid="${pid}" ${isActive?'checked':''} style="width:14px;height:14px;accent-color:var(--green);cursor:pointer;" onchange="toggleProjectActive('${pid}', this.checked)">
           <span>Start</span>
         </label>
+        ${p.password ? `<span style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0.1rem 0.35rem;cursor:pointer;" title="パスワード設定済み" onclick="event.stopPropagation();openProjectPass('${pid}')">pass ✓</span>` : `<span style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted2);border:1px solid var(--muted2);border-radius:4px;padding:0.1rem 0.35rem;cursor:pointer;" title="パスワード未設定" onclick="event.stopPropagation();openProjectPass('${pid}')">pass</span>`}
         <button class="btn btn-ghost btn-icon" title="リンクをコピー / Copy links" onclick="copyAllLinks('${pid}')" style="width:26px;height:26px;padding:0;font-size:0.85rem;">⎘</button>
       </div>
       <div class="project-card-arrow">›</div>`;
@@ -1659,6 +1660,25 @@ function buildProjectUrls(pid) {
     infoUrl:   `${baseUrl}?mode=info&project=${pid}&cfg=${cfg}`,
     qrUrl:     `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`${baseUrl}?mode=join&project=${pid}&cfg=${cfg}`)}`
   };
+}
+
+function openProjectPass(pid) {
+  // 詳細画面からでなくても使えるようにpidを直接受け取る
+  db.ref(`projects/${pid}`).once('value', snap => {
+    const p = snap.val() || {};
+    const hasPw = !!p.password;
+    document.getElementById('pass-modal-title').textContent = hasPw ? 'パスワード設定済み / Password Set' : 'パスワード設定 / Set Password';
+    document.getElementById('pass-current-display').style.display = hasPw ? 'block' : 'none';
+    if (hasPw) document.getElementById('pass-current-val').textContent = p.password;
+    document.getElementById('pass-input-label').textContent = hasPw ? '変更する場合 / Change to' : '新しいパスワード / New Password';
+    document.getElementById('pass-input').value = '';
+    document.getElementById('pass-remove-btn').style.display = hasPw ? '' : 'none';
+    // savePass/removePassが使えるようにcurrentProjectIdをセット
+    currentProjectId = pid;
+    currentProject = p;
+    openModal('modal-pass');
+    setTimeout(() => document.getElementById('pass-input').focus(), 100);
+  });
 }
 
 function openPassModal() {
